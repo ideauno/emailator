@@ -17,6 +17,28 @@ INSTALLATION
 
     include_once(ROOT . '/app/plugins/emailator/config/config.php');
 
+3. Dumpt the tables config/schema/emilator.sql in your data base
+    
+    CREATE TABLE `emilios` (
+      `id` int(11) NOT NULL auto_increment,
+      `title` varchar(255) NOT NULL,
+      `ubication_id` int(11) NOT NULL,
+      `body_data` text,
+      `to` varchar(255) NOT NULL,
+      `send_date` datetime NOT NULL,
+      `status` int(11) NOT NULL,
+      `priority` int(11) NOT NULL,
+      `created` datetime default NULL,
+      `modified` datetime default NULL,
+      PRIMARY KEY  (`id`)
+    );
+
+    CREATE TABLE `ubications` (
+      `id` int(11) NOT NULL auto_increment,
+      `route` varchar(255) NOT NULL,
+      PRIMARY KEY  (`id`)
+    );
+
 
 
 CONFIGURATION
@@ -40,11 +62,11 @@ COMPONENT
         array $data
             $data = array(
                [0] => array(
-                   ['email'] => 'email@email.com',
+                   ['email'] => 'email0@email.com',
                    ['body_data'] => array()
                ),
                [1] => array(
-                   ['email'] => 'email@email.com',
+                   ['email'] => 'email1@email.com',
                    ['body_data'] => array()
                ),
                .
@@ -52,7 +74,7 @@ COMPONENT
                .
                ,
                [N] => array(
-                   ['email'] => 'email@email.com',
+                   ['email'] => 'emailN@email.com',
                    ['body_data'] => array()
                )      
           );
@@ -65,13 +87,15 @@ COMPONENT
         
         int $priority
             1: high
-            2. medium
-            3. low
+            2: medium
+            3: low
 
         date $when
             date to send mail, default: now
     
-    Return
+
+    Return:
+
         true 
 
 
@@ -80,15 +104,11 @@ SHELL
 -----
 
     Run in the folder proyect "/cake/console/cake emailator send" to roun queue
-    
-    Cronjob example configuration (run every 30 minutes)
-
-        */30 * * * * var/www/myProyect/ cake/console/cake emailator send
+        
 
 
-
-EXAMPLE TO USE IN CONTROLLER
-----------------------------
+EXAMPLE: USE IN CONTROLLER
+--------------------------
 
 <?php
 
@@ -129,5 +149,22 @@ class CarsController extends AppController {
 
 }
 
+
+EXAMPLE: THE VIEW ELEMENT
+-------------------------
+
+	/app/views/elements/email/html/default.php
+	
+		<!-- This is the email's body with php data -->
+		Hello <?php echo $data['name']; ?>, your code is <?php echo $data['code']; ?>.
+
 ?>
+
+
+
+EXAMPLE: CRONJOB
+----------------
  
+	Cronjob example configuration (run every 30 minutes)
+
+		*/30 * * * * var/www/myProyect/ cake/console/cake emailator send
