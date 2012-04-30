@@ -1,0 +1,133 @@
+ ----------------------------------
+| Emailator plugin for cakephp1.3 |
+ ----------------------------------
+
+The plugins Emailator is composed of Emilio component that used to place emails
+in a queue, so that later, at another moment the queue is processed by a shell
+script.
+
+
+
+INSTALLATION
+------------
+
+1. Put "emailator" folder in app/plugins/
+
+2. Include the next line en app/config/config.php
+
+    include_once(ROOT . '/app/plugins/emailator/config/config.php');
+
+
+
+CONFIGURATION
+------------
+
+1. File app/plugins/emailator/config/config.php
+
+
+
+COMPONENT
+---------
+
+1. Include component in your controller
+
+     var $components = array('Emailator.Emilio');
+
+2. Use the the method "generate"
+
+    Params:
+
+        array $data
+            $data = array(
+               [0] => array(
+                   ['email'] => 'email@email.com',
+                   ['body_data'] => array()
+               ),
+               [1] => array(
+                   ['email'] => 'email@email.com',
+                   ['body_data'] => array()
+               ),
+               .
+               .
+               .
+               ,
+               [N] => array(
+                   ['email'] => 'email@email.com',
+                   ['body_data'] => array()
+               )      
+          );
+
+        string $subject
+            mail subject
+
+        string $body_element
+            mail element in /views/elements/email/html/
+        
+        int $priority
+            1: high
+            2. medium
+            3. low
+
+        date $when
+            date to send mail, default: now
+    
+    Return
+        true 
+
+
+
+SHELL
+-----
+
+    Run in the folder proyect "/cake/console/cake emailator send" to roun queue
+    
+    Cronjob example configuration (run every 30 minutes)
+
+        */30 * * * * var/www/myProyect/ cake/console/cake emailator send
+
+
+
+EXAMPLE TO USE IN CONTROLLER
+----------------------------
+
+<?php
+
+class CarsController extends AppController {
+
+    var $name = 'Cars';
+    var $components = array('Emailator.Emilio');
+
+    function index() {
+        // Set the email of the receiver, and the embebed data who will show in the element
+        $data = array(
+            '0' => array(
+                'email' => 'email1@email.com',
+                'body_data' => array('name' => 'Carlos', 'code' => 'ZSDF6MCS')
+            ),
+            '1' => array(
+                'email' => 'email2@email.com',
+                'body_data' => array('name' => 'Felipe', 'code' => 'ZSDF6MC3')
+            ),
+            '2' => array(
+                'email' => 'email3@email.com',
+                'body_data' => array('name' => 'Andrés', 'code' => 'ZSDF6MC4')
+            )
+        );
+
+        // Set the email subject
+        $subject = 'this is the email subject';
+
+        // Set the body element
+        $body_element = 'default';
+
+        // Set the email priority: 3 Low 
+        $priority = '3';
+
+        // Use the Emilio component
+        $this->Emilio->generate($data, $subject, $body_element, $priority);
+    }
+
+}
+
+?>
+ 
